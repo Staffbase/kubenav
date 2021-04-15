@@ -23,8 +23,14 @@ export const addShell = async (
 
   try {
     if (context.clusters && context.cluster) {
+      const commands = shell
+        .split(' ')
+        .map((command) => {
+          return `command=${encodeURIComponent(command)}`;
+        })
+        .join('&');
       const { id } = await kubernetesExecRequest(
-        `${url}/exec?command=${shell}&container=${container}&stdin=true&stdout=true&stderr=true&tty=true`,
+        `${url}/exec?${commands}&container=${container}&stdin=true&stdout=true&stderr=true&tty=true`,
         context.settings,
         await context.kubernetesAuthWrapper(''),
       );

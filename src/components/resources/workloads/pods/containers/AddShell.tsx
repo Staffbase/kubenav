@@ -6,6 +6,7 @@ import { IContext, ITerminalContext, TActivator } from '../../../../../declarati
 import { AppContext } from '../../../../../utils/context';
 import { TerminalContext } from '../../../../../utils/terminal';
 import { addShell } from '../../../../plugins/terminal/helpers';
+import { AddCustomCommand } from './AddCustomCommand';
 
 interface IAddShellProps {
   activator: TActivator;
@@ -27,6 +28,8 @@ const AddShell: React.FunctionComponent<IAddShellProps> = ({
 
   const [showPopover, setShowPopover] = useState<boolean>(false);
   const [popoverEvent, setPopoverEvent] = useState();
+
+  const [showCustomCommand, setShowCustomCommand] = useState<boolean>(false);
 
   const url = `/api/v1/namespaces/${namespace}/pods/${pod}`;
 
@@ -90,8 +93,32 @@ const AddShell: React.FunctionComponent<IAddShellProps> = ({
           >
             <IonLabel>cmd</IonLabel>
           </IonItem>
+          <IonItem
+            button={true}
+            detail={false}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowPopover(false);
+              if (closeItemSliding) {
+                closeItemSliding();
+              }
+              setShowCustomCommand(true);
+            }}
+          >
+            <IonLabel>exec …</IonLabel>
+          </IonItem>
         </IonList>
       </IonPopover>
+
+      {showCustomCommand ? (
+        <AddCustomCommand
+          context={context}
+          terminalContext={terminalContext}
+          url={url}
+          container={container}
+          onDidDismiss={() => setShowCustomCommand(false)}
+        />
+      ) : null}
 
       {activator === 'item-option' ? (
         <IonItemOption
